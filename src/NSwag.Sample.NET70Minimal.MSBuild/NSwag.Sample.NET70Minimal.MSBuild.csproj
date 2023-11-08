@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NSwag.MSBuild" Version="13.20.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Trying this...   -->
+  <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+    <!--Calling MSBuild to be sure the assembly is built-->
+    <MSBuild Projects="$(ProjectDir)..\NSwag.Sample.NET70Minimal\NSwag.Sample.NET70Minimal.csproj" />
+    
+    <!--This fails-->
+    <Exec WorkingDirectory="$(ProjectDir)..\NSwag.Sample.NET70Minimal\bin\$(Configuration)\net7.0"
+          Command="$(NSwagExe_Net70) aspnetcore2swagger /assembly:NSwag.Sample.NET70Minimal.dll /output:$(ProjectDir)myapi.json" />
+    <!--Also tried with these, but it didn't seem to help-->
+    <!--Removed EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"-->
+    <!--Removed /variables:Configuration=$(Configuration)-->
+  </Target>
+
+</Project>
